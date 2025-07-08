@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – Trash Map{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8">
+    <h1 class="display-5 text-center mb-4">Mon Dashboard</h1>
+
+    <section class="mb-5">
+      <h2 class="h4 mb-3">Statistiques générales</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Nombre total d’images : <strong>{{ data.total_images }}</strong>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-5">
+      <h2 class="h4 mb-3">Images par utilisateur</h2>
+      <ul class="list-group list-group-flush">
+        {% for entry in data.images_by_user %}
+          <li class="list-group-item">
+            {{ entry.username }} : <strong>{{ entry.total }}</strong> image(s)
+          </li>
+        {% else %}
+          <li class="list-group-item">Aucune image trouvée.</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="mb-5">
+      <h2 class="h4 mb-3">État des poubelles (basé sur les prédictions)</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Nombre de poubelles pleines (dirty) : <strong>{{ data.trash_status_counts.dirty }}</strong>
+        </li>
+        <li class="list-group-item">
+          Nombre de poubelles vides (clean) : <strong>{{ data.trash_status_counts.clean }}</strong>
+        </li>
+      </ul>
+    </section>
+
+
+    <section class="mb-5">
+      <h2 class="h4 mb-3">Comparaison des labels (clean vs dirty)</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Faux vide  : <strong>{{ data.label_accuracy.false_clean }}</strong>
+        </li>
+        <li class="list-group-item">
+          Vrai vide  : <strong>{{ data.label_accuracy.true_clean }}</strong>
+        </li>
+        <li class="list-group-item">
+          Faux plein  : <strong>{{ data.label_accuracy.false_dirty }}</strong>
+        </li>
+        <li class="list-group-item">
+          Vrai plein : <strong>{{ data.label_accuracy.true_dirty }}</strong>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-5">
+      <h2 class="h4 mb-4">Comparaison des labels (clean vs dirty)</h2>
+      <img src="data:image/png;base64,{{ chart_base64 }}" alt="Graphique camembert" class="img-fluid rounded shadow">
+    </section>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Arrondissement</th>
+          <th>Poubelles vides</th>
+          <th>Poubelles pleines</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for arrondissement, counts in data.labels_by_arrondissement.items() %}
+          <tr>
+            <td>{{ arrondissement }}</td>
+            <td>{{ counts.clean }}</td>
+            <td>{{ counts.dirty }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+    <section class="mb-5">
+      
+      <div class="row">
+        {% if data.pie_15e %}
+          <div class="col-md-6 text-center">
+            <h5>15e arrondissement</h5>
+            <img src="data:image/png;base64,{{ data.pie_15e }}" class="img-fluid rounded shadow">
+          </div>
+        {% endif %}
+        
+        {% if data.pie_16e %}
+          <div class="col-md-6 text-center">
+            <h5>16e arrondissement</h5>
+            <img src="data:image/png;base64,{{ data.pie_16e }}" class="img-fluid rounded shadow">
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

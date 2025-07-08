@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Se connecter') }} – Trash Map{% endblock %}
+
+{% block content %}
+<div class="auth-box flex-fill d-flex justify-content-center align-items-center">
+  <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4">{{ _('Se connecter') }}</h2>
+
+      {# Flash messages #}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ _('Close') }}"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('main.login') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+          {{ form.email.label(class="form-label") }}
+          {{ form.email(class="form-control", placeholder=_('Adresse email'), id="email") }}
+          {% for error in form.email.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password.label(class="form-label") }}
+          <div class="input-group">
+            {{ form.password(class="form-control", placeholder=_('Mot de passe'), id="password-input") }}
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="toggle-password"
+              tabindex="-1"
+              title="{{ _('Afficher / masquer le mot de passe') }}"
+            >
+              👁️
+            </button>
+          </div>
+          {% for error in form.password.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3 form-check">
+          {{ form.remember(class="form-check-input", id="remember") }}
+          <label class="form-check-label" for="remember">
+            {{ _('Se souvenir de moi') }}
+          </label>
+        </div>
+
+        <div class="d-grid">
+          {{ form.submit_login(class="btn btn-primary w-100", value=_('Se connecter')) }}
+        </div>
+      </form>
+
+      <div class="mt-3 text-center">
+        <p>{{ _("Pas encore de compte ?") }}
+          <a href="{{ url_for('main.register') }}">{{ _("S'inscrire") }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    const toggle = document.getElementById('toggle-password');
+    const pwd    = document.getElementById('password-input');
+
+    toggle.addEventListener('click', () => {
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        toggle.textContent = '🙈';
+      } else {
+        pwd.type = 'password';
+        toggle.textContent = '👁️';
+      }
+    });
+  </script>
+{% endblock %}

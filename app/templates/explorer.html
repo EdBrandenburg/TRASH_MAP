@@ -1,0 +1,116 @@
+{# templates/explorer.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _('Explorer – Trash Map') }}{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center mb-4">
+    <div class="col-12 text-center">
+      <h1 class="display-5">{{ _('Galerie des photos') }}</h1>
+      <p class="lead">{{ _('Parcourez toutes les images soumises par les utilisateurs.') }}</p>
+    </div>
+  </div>
+
+  {% if images %}
+    <div class="row g-4">
+      {% for img in images %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm">
+            <a href="#"
+               data-bs-toggle="modal"
+               data-bs-target="#imageModal"
+               data-img-url="{{ url_for('static', filename='uploads/' ~ img.file_path) }}"
+               data-img-id="{{ img.id }}"
+               data-img-label="{{ img.true_label if img.true_label != 'unknown' else img.label }}"
+               data-img-name="{{ img.file_path.split('/')[-1] }}">
+              <img
+                src="{{ url_for('static', filename='uploads/' ~ img.file_path) }}"
+                class="card-img-top"
+                alt="{{ img.label or (_('Photo') ~ ' ' ~ loop.index) }}"
+              >
+            </a>
+            <div class="card-body p-2 text-center">
+              {% if img.true_label != 'unknown' %}
+                <h6 class="card-title mb-1">{{ img.true_label }}</h6>
+              {% elif img.label %}
+                <h6 class="card-title mb-1">{{ img.label }}</h6>
+              {% endif %}
+              <p class="card-text small text-muted">
+                {{ img.upload_date.strftime('%d %b %Y') }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Modal pour afficher l’image en grand #}
+    <div class="modal fade"
+         id="imageModal"
+         tabindex="-1"
+         aria-labelledby="imageModalLabel"
+         aria-hidden="true"
+         data-admin="{{ 'true' if current_user.is_authenticated and current_user.role=='admin' else 'false' }}">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imageModalLabel">{{ _('Annotation d’image') }}</h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="{{ _('Fermer') }}"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="modalImage"
+                 src=""
+                 alt="{{ _('Image agrandie') }}"
+                 class="img-fluid rounded">
+            <p id="modalImageName"
+               class="mt-3"
+               style="font-size:0.9rem;color:#888;"></p>
+            
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <div id="adminButtons" class="mt-3 d-flex justify-content-center gap-3" hidden>
+              <a id="btnPleine" href="#" class="btn btn-success">{{ _('Pleine') }}</a>
+              <a id="btnVide"   href="#" class="btn btn-danger">{{ _('Vide') }}</a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="alert alert-info text-center" role="alert">
+      {{ _('Aucune photo disponible pour le moment.') }}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    const imageModal = document.getElementById('imageModal');
+    const adminFlag  = imageModal.dataset.admin === 'true';
+    const adminBtns  = document.getElementById('adminButtons');
+
+    imageModal.addEventListener('show.bs.modal', function (event) {
+      const trigger   = event.relatedTarget;
+      const imgUrl    = trigger.getAttribute('data-img-url');
+      const imgId     = trigger.getAttribute('data-img-id');
+      const imgLabel  = trigger.getAttribute('data-img-label');
+      const imgName   = trigger.getAttribute('data-img-name');
+
+      document.getElementById('modalImage').src       = imgUrl;
+      document.getElementById('modalImageName').innerText = `${imgName} (${imgLabel})`;
+
+      if (adminFlag) {
+        adminBtns.hidden = false;
+        document.getElementById('btnPleine').href = `/annotate/${imgId}/dirty`;
+        document.getElementById('btnVide').href   = `/annotate/${imgId}/clean`;
+      } else {
+        adminBtns.hidden = true;
+      }
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{# templates/upload.html #}
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Uploader et classifier') }} – Trash Map{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Colonne gauche : tableau (50%) -->
+  <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="card-title mb-3">{{ _('Aperçu des fichiers') }}</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>{{ _('Nom du fichier') }}</th>
+              <th>{{ _('Date d’import') }}</th>
+              <th>{{ _('Statut') }}</th>
+            </tr>
+          </thead>
+          <tbody id="file-list">
+            {% for file in files %}
+            <tr>
+              <td>{{ file.file_path.split('/')[-1] }}</td>
+              <td>{{ file.upload_date.strftime('%d/%m/%Y') }}</td>
+              <td>{{ file.true_label or '–' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="3" class="text-center">{{ _('Aucun fichier téléversé') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne droite : classification et upload -->
+  <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body d-flex flex-column justify-content-between" style="height:100%;">
+        <div>
+          <h2 class="card-title mb-3 text-center">{{ _("Classifier l'image") }}</h2>
+
+          <!-- Boutons de classification côte à côte -->
+          <div class="d-flex justify-content-around mb-4">
+            {% if role == 'admin' %}
+              <button type="button" id="btn-full"  class="btn btn-outline-primary">
+                {{ _('Poubelle pleine') }}
+              </button>
+              <button type="button" id="btn-empty" class="btn btn-outline-success">
+                {{ _('Poubelle vide') }}
+              </button>
+            {% endif %}
+          </div>
+
+        </div>
+                    <!-- Aperçu de l'image sélectionnée -->
+        <div class="mb-3">
+          <img id="image-preview" src="" alt="Aperçu de l'image" class="img-fluid" style="display:none;"/>
+        </div>
+
+        <!-- Affichage du label attribué après classification -->
+        <div class="mb-3" id="predicted-label" style="display:none;">
+          <h5>Label attribué : <span id="label-text"></span></h5>
+        </div>
+
+        <!-- Formulaire d'upload en bas -->
+        <form id="upload-form"
+              method="POST"
+              action="{{ url_for('main.upload') }}"
+              enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            <label for="file" class="form-label">{{ _('Sélectionner un fichier') }}</label>
+            {{ form.file(class="form-control", id="file") }}
+            {% for err in form.file.errors %}
+              <div class="text-danger small">{{ err }}</div>
+            {% endfor %}
+          </div>
+
+          {{ form.status(id="status-field") }}
+
+          <div class="d-grid">
+            {{ form.submit(class="btn btn-primary w-100", value=_('Téléverser et classifier')) }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

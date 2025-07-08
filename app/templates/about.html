@@ -1,0 +1,64 @@
+{# templates/about.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _("À propos – Trash Map") }}{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <!-- Introduction -->
+      <section class="mb-5 text-center">
+        <h1 class="display-5">{{ _("À propos de Trash Map") }}</h1>
+        <p class="lead">
+          {{ _("Trash Map est une plateforme intelligente dédiée à la détection visuelle, au suivi et à la prévention des dépôts sauvages en milieu urbain.") }}
+          {{ _("Développée dans le cadre du projet") }} <em>VISIO</em> 
+          (<em>{{ _("Vision Intelligente de Suivi et d’Identification des Ordures") }}</em>),
+          {{ _("elle s’inscrit dans l’initiative Wild Dump Prevention (WDP), une démarche innovante soutenue par les principes de l’IA au service du bien commun (AI for Good).") }}
+        </p>
+        <p>
+          {{ _("Notre constat est simple : le manque de données fiables sur l’état des poubelles publiques empêche une gestion proactive des déchets et favorise l’apparition de dépôts inappropriés.") }}
+          {{ _("Trash Map répond à ce défi en combinant technologie, intelligence artificielle et données de terrain pour offrir une cartographie dynamique et prédictive des zones à risque.") }}
+        </p>
+
+      </section>
+
+      <!-- Mission -->
+      <section class="mb-5">
+        <h2 class="h3 text-center mb-4">{{ _("Notre mission") }}</h2>
+        <ul class="list-group list-group-flush mission-list">
+          <li class="list-group-item text-center">
+            <strong>{{ _("Détecter automatiquement") }}</strong>
+            {{ _("l’état des poubelles (pleines, vides, débordantes) grâce à l’analyse d’images.") }}
+          </li>
+          <li class="list-group-item text-center">
+            <strong>{{ _("Centraliser et structurer") }}</strong>
+            {{ _("les signalements issus des citoyens, agents de terrain et caméras embarquées.") }}
+          </li>
+          <li class="list-group-item text-center">
+            <strong>{{ _("Anticiper les risques") }}</strong>
+            {{ _("de débordement via des règles visuelles simples et des tableaux de bord interactifs.") }}
+          </li>
+          <li class="list-group-item text-center">
+            <strong>{{ _("Fournir aux collectivités") }}</strong>
+            {{ _("des outils décisionnels pour une gestion des déchets plus efficace, durable et économique.") }}
+          </li>
+        </ul>
+      </section>
+
+      <!-- Engagement -->
+      <section class="text-center">
+        <h2 class="h3 mb-3">{{ _("Notre engagement") }}</h2>
+        <p>
+          {{ _("Nous croyons que la technologie peut aider les villes à devenir plus propres, plus responsables et plus intelligentes.") }}
+          {{ _("Grâce à une interface accessible et des fonctionnalités pensées pour le terrain, Trash Map s’impose comme un outil concret de lutte contre les déchets abandonnés.") }}
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <a href="{{ url_for('main.contact') }}" class="btn btn-primary px-4 py-2">
+      {{ _("Nous contacter") }}
+    </a>
+  </div>
+{% endblock %}

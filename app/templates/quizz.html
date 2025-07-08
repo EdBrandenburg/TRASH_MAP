@@ -1,0 +1,100 @@
+{# templates/quizz.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _('Le Juste Déchet') }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="text-center mb-4">🎯 {{ _('Le Juste Déchet') }}</h1>
+  <p class="lead text-center">
+    {{ _('Saurez-vous déterminer si ces poubelles sont propres ou sales ?') }}
+  </p>
+
+  {# Flash messages #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="{{ _('Fermer') }}"
+          ></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('quiz.take_quiz') }}">
+    <div class="row">
+      {# Images connues #}
+      {% for img in known_images %}
+        <div class="col-md-4 text-center mb-4">
+          <img 
+            src="{{ url_for('static', filename='uploads/' ~ img.file_path) }}"
+            class="img-fluid rounded"
+            alt="{{ _('Photo de poubelle n°%(num)s', num=loop.index) }}"
+            style="width: 300px; height: 300px; object-fit: cover;"
+          >
+          <input type="hidden" name="image_ids" value="{{ img.id }}">
+          <div class="btn-group btn-group-toggle mt-2" data-bs-toggle="buttons">
+            <label class="btn btn-outline-success">
+              <input 
+                type="radio" 
+                name="guess_{{ img.id }}" 
+                value="clean" 
+                required
+              > {{ _('Propre') }}
+            </label>
+            <label class="btn btn-outline-danger">
+              <input 
+                type="radio" 
+                name="guess_{{ img.id }}" 
+                value="dirty" 
+                required
+              > {{ _('Sale') }}
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+
+      {# Image inconnue #}
+      <div class="col-md-4 text-center mb-4">
+        <img
+          src="{{ url_for('static', filename='uploads/' ~ unknown_image.file_path) }}"
+          class="img-fluid rounded"
+          alt="{{ _('Photo de poubelle inconnue') }}"
+          style="width: 300px; height: 300px; object-fit: cover;"
+        >
+        <input type="hidden" name="image_ids" value="{{ unknown_image.id }}">
+        <div class="btn-group btn-group-toggle mt-2" data-bs-toggle="buttons">
+          <label class="btn btn-outline-success">
+            <input
+              type="radio"
+              name="guess_{{ unknown_image.id }}"
+              value="clean"
+              required
+            > {{ _('Propre') }}
+          </label>
+          <label class="btn btn-outline-danger">
+            <input
+              type="radio"
+              name="guess_{{ unknown_image.id }}"
+              value="dirty"
+              required
+            > {{ _('Sale') }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary btn-lg">
+        {{ _('Valider mes réponses') }}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

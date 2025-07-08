@@ -1,0 +1,6 @@
+username,email,password,nb_pic,role,points
+alice,alice@example.com,12345,0,user,150.5
+bob,bob@example.com,67890,0,user,75.0
+charlie,charlie@example.com,11111,0,user,0.0
+diana,diana@example.com,22222,0,admin,300.75
+anonymous,john.doe@example.com,666,600,anonyme,300.75

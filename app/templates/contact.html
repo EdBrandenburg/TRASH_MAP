@@ -1,0 +1,62 @@
+{# templates/contact.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _('Contact – Trash Map') }}{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <section class="text-center mb-5">
+        <h1 class="display-5 mb-4">{{ _('Nous contacter') }}</h1>
+        <p class="lead">
+          {{ _("Vous avez une suggestion, une remarque ou souhaitez simplement nous écrire ?") }}
+          {{ _("Ce formulaire est là pour ça. Nous serons ravis de vous lire !") }}
+        </p>
+      </section>
+
+      <form method="POST" action="{{ url_for('main.submit_contact') }}">
+        <div class="mb-3">
+          <label for="name" class="form-label">{{ _('Nom') }}</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            placeholder="{{ _('Votre nom') }}"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">{{ _('Adresse email') }}</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            placeholder="{{ _('votre@email.com') }}"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="message" class="form-label">{{ _('Votre message') }}</label>
+          <textarea
+            class="form-control"
+            id="message"
+            name="message"
+            rows="6"
+            placeholder="{{ _('Écrivez ici votre remarque...') }}"
+            required
+          ></textarea>
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-success px-4 py-2">
+            {{ _('Envoyer') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{# templates/map.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _('Carte') }} – Trash Map{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center mb-4">
+    <div class="col-12">
+      <h1 class="display-5 text-center">{{ _('Carte interactive') }}</h1>
+      <p class="lead text-center">
+        {{ _('Visualisez l’emplacement de toutes les poubelles et zones à risque.') }}
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div id="map" class="w-100" style="height: 600px;"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    var map = L.map('map').setView([48.8566, 2.3522], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; {{ _("OpenStreetMap contributors") }}'
+    }).addTo(map);
+
+    const redIcon = L.icon({
+      iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    const blueIcon = L.icon({
+      iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    fetch('{{ url_for("main.map_points") }}')
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(point => {
+          const icon = point.label === 'dirty' ? redIcon : blueIcon;
+          const marker = L.marker([point.lat, point.lon], { icon }).addTo(map);
+
+          marker.bindPopup(`
+            <strong>{{ _('Image') }} #${point.id} ({{ _('Statut') }}: ${point.label})</strong><br>
+            <img src="/static/uploads/${point.file}" width="200" alt="{{ _('Photo') }} #${point.id}}">
+          `);
+        });
+      });
+  </script>
+{% endblock %}

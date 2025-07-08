@@ -1,0 +1,92 @@
+{# templates/profile.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ _('Mon Profil') }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Left column: avatar & user info -->
+    <div class="col-md-4 text-center">
+      <img 
+        src="{{ current_user.profile_image_url or url_for('static', filename='uploads/default.png') }}"
+        alt="{{ _('Avatar de %(username)s', username=current_user.username) }}"
+        class="rounded-circle"
+        width="150"
+        height="150"
+      >
+      <h3 class="mt-3">{{ current_user.username }}</h3>
+      <p>{{ current_user.email }}</p>
+      <p><strong>{{ _('Points') }} :</strong> {{ current_user.points }}</p>
+      <p><strong>{{ _('Photos publiées') }} :</strong> {{ images|length }}</p>
+      <p><strong>{{ _('Rôle') }} :</strong> {{ _(current_user.role.capitalize()) }}</p>
+
+      <!-- Redirect to the upload page -->
+      <a 
+        href="{{ url_for('main.upload') }}"
+        class="btn btn-sm btn-outline-success mt-3"
+      >
+        {{ _('Téléverser une photo') }}
+      </a>
+
+      <a 
+        href="{{ url_for('profile.view') }}#change-pwd"
+        class="btn btn-sm btn-warning mt-2"
+      >
+        {{ _('Changer mon mot de passe') }}
+      </a>
+    </div>
+
+    <!-- Right column: user's images -->
+    <div class="col-md-8">
+      <h4>{{ _('Mes Photos') }}</h4>
+      <div class="row">
+        {% for image in images %}
+          <div class="col-sm-6 col-lg-4 mb-4">
+            <div class="card">
+              <img 
+                src="{{ url_for('static', filename='uploads/' ~ image.file_path) }}"
+                class="card-img-top"
+                alt="{{ image.label or _('Photo %(num)s', num=loop.index) }}"
+              >
+              <div class="card-body">
+                {% if image.label %}
+                  <h5 class="card-title">{{ image.label }}</h5>
+                {% endif %}
+                <p class="card-text">
+                  {{ _('Publié le %(date)s', date=image.upload_date.strftime('%d/%m/%Y')) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted">{{ _("Vous n'avez pas encore publié de photos.") }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Change password section -->
+  <div id="change-pwd" class="mt-5">
+    <h4>{{ _('Changer mon mot de passe') }}</h4>
+    <form method="post" action="{{ url_for('profile.view') }}#change-pwd">
+      {{ pwd_form.hidden_tag() }}
+      <div class="mb-3">
+        {{ pwd_form.old_password.label(class="form-label") }}
+        {{ pwd_form.old_password(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ pwd_form.new_password.label(class="form-label") }}
+        {{ pwd_form.new_password(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ pwd_form.confirm.label(class="form-label") }}
+        {{ pwd_form.confirm(class="form-control") }}
+      </div>
+      <div class="d-grid">
+        {{ pwd_form.submit_pwd(class="btn btn-primary", value=_('Changer')) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
