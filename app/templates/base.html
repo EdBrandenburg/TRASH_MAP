@@ -1,0 +1,168 @@
+{# templates/base.html #}
+<!DOCTYPE html>
+<html lang="{{ current_locale }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{{ _('Trash Map') }}{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Micro+5&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css?family=Kanit&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Flag Icons CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="{{ url_for('static', filename='img/corbeille.png') }}"
+  />
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg custom-navbar fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('main.show_map') }}">
+        {{ _('Trash Map') }}
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#topNav"
+        aria-controls="topNav"
+        aria-expanded="false"
+        aria-label="{{ _('Toggle navigation') }}"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="topNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-column flex-lg-row">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.show_map') }}">{{ _('Map') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}">{{ _('Dashboard') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.explorer') }}">{{ _('Explorer') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.upload') }}">{{ _('Importer') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.quizz') }}">{{ _('Le Juste Déchet') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.about') }}">{{ _('À propos') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.contact') }}">{{ _('Contact') }}</a>
+          </li>
+          {% if current_user.is_authenticated and current_user.role== 'admin' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.classification_rules') }}">Règles de classification</a></li>
+          {% endif %}
+        </ul>
+
+        <div class="auth-box d-flex align-items-center ms-auto">
+          {# Language switcher flags #}
+          <ul class="navbar-nav ms-3 d-flex flex-row align-items-center">
+            <li class="nav-item">
+              <a class="nav-link p-1" href="{{ request.path }}?lang=fr" title="Français">
+                <span class="fi fi-fr"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link p-1" href="{{ request.path }}?lang=en" title="English">
+                <span class="fi fi-gb"></span>
+              </a>
+            </li>
+          </ul>
+
+          {% if current_user.is_authenticated %}
+            {# User’s initial as a colored circle #}
+            <a href="{{ url_for('profile.view') }}" class="nav-avatar me-2">
+              <span class="avatar-circle">{{ current_user.username[0]|upper }}</span>
+            </a>
+            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-light">
+              {{ _('Déconnexion') }}
+            </a>
+          {% else %}
+            <a href="{{ url_for('main.login') }}" class="btn btn-auth-login me-2">
+              {{ _('Se connecter') }}
+            </a>
+            <a href="{{ url_for('main.register') }}" class="btn btn-auth-signup">
+              {{ _('S’inscrire') }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container-fluid flex-fill pt-5 pb-5">
+    <div class="row h-100">
+      <main class="col-12 px-4 py-4 overflow-auto">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer text-center py-3 mt-auto">
+    &copy; {{ current_year }} {{ _('Trash Map — Tous droits réservés') }}
+  </footer>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ _('Close') }}"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
